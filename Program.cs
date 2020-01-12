@@ -15,7 +15,7 @@ namespace rpi_stat
 
             if (sensor.Test())
             {
-                Console.WriteLine("Sensor Check Succeeded");
+                Console.WriteLine("Sensor detected");
             }
 
             while (true)

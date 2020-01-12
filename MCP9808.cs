@@ -61,28 +61,59 @@ namespace rpi_stat
 
             _i2cDevice.WriteRead(writeBuffer, readBuffer);
 
-            // http://ww1.microchip.com/downloads/en/DeviceDoc/25095A.pdf
+            /*
+            Chip specs & reference:
+            http://ww1.microchip.com/downloads/en/DeviceDoc/25095A.pdf (Page 24-25 is the relevant section)
+            https://www.cs.cornell.edu/~tomf/notes/cps104/twoscomp.html
 
-            // Code ported from these sources:
-            // https://github.com/adafruit/Adafruit_CircuitPython_MCP9808/blob/master/adafruit_mcp9808.py#L100
-            // https://github.com/adafruit/Adafruit_MCP9808_Library/blob/master/Adafruit_MCP9808.cpp
+            Code ported from these sources:
+            https://github.com/adafruit/Adafruit_CircuitPython_MCP9808/blob/master/adafruit_mcp9808.py#L100
+            https://github.com/adafruit/Adafruit_MCP9808_Library/blob/master/Adafruit_MCP9808.cpp
 
-            // Mask off the first 3 bits of the upper byte; these contain
-            var upperByte = readBuffer[0] & 0b00011111; // 0x1F;
-            var lowerByte = readBuffer[1];
+            So at this point, readBuffer contains the 16 bits from the 2-byte ambient temperature register.
 
-            if ((upperByte & 0x10) == 0x10)
+            The first three bits of the upper byte represent the alert pin state (we're ignoring it for now).
+
+            The next bit is the sign bit: 0 for temps > 0C, 1 for < 0C.
+
+            The remaining 4 bits of the upper byte combined with the 8 from the lower byte make up the
+            temperature value, in two's compliment format.
+            */
+
+            // Bit mask for the first 3 bits (alert state) of the upper byte
+            // This is just 0x1F, but the binary literal makes this much easier to visualise
+            const int alertStateMask = 0b00011111;
+
+            // Bit mask for the sign bit of the upper byte
+            const int signMask = 0b00010000;
+
+            // Logical ANDing the upper byte with the mask gives us the
+            // temperature value bytes without the alert state values
+            var upper = readBuffer[0] & alertStateMask;
+            var lower = readBuffer[1];
+
+            double temperature = -1;
+
+            // From EXAMPLE 5-1 in chip documentation
+            static double convertToDecimal(int u, int l) => (u * 16) + (l / 16.0);
+
+            // The temperature bits are in two’s compliment format, therefore positive
+            // and negative temperature values need to be computed differently.
+
+            // If the sign bit of the upper byte is 1, we're looking at a negative number
+            if ((upper & signMask) == 0x10)
             {
-                upperByte &= 0x0f;
+                // Clear the sign bit, so we're just left with numeric bits
+                upper &= 0x0f;
 
-                var temp1 = (upperByte * 16) + (lowerByte / 16.0) - 256;
-
-                return Temperature.FromCelsius(temp1);
+                temperature = 256 - convertToDecimal(upper, lower);
+            }
+            else
+            {
+                temperature = convertToDecimal(upper, lower);
             }
 
-            var temp2 = (upperByte * 16) + (lowerByte / 16.0);
-
-            return Temperature.FromCelsius(temp2);
+            return Temperature.FromCelsius(temperature);
         }
 
         public void Dispose()
