@@ -61,7 +61,7 @@
     <Folder Include="Scripts" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="Tables\Temperatures.sql" />
+    <Build Include="Tables\TemperatureReadings.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Publish\db.publish.xml" />

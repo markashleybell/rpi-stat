@@ -1,6 +1,6 @@
 using System;
 
-namespace rpi_stat_ui.Models
+namespace core
 {
     public class Reading
     {
