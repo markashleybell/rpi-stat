@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using core;
+using Microsoft.AspNetCore.SignalR.Client;
 using Newtonsoft.Json;
 
 namespace rpi_stat
@@ -46,28 +47,39 @@ namespace rpi_stat
 
             var locationID = new Guid("e9a1b593-e609-4edb-b794-92ace8d4bccf");
 
-            var httpClient = new HttpClient();
+            var connection = new HubConnectionBuilder()
+                .WithUrl("https://rpi-stat/stathub")
+                .WithAutomaticReconnect()
+                .Build();
 
-            var ok = true;
+            connection.Closed += async (error) => {
+                Console.WriteLine(error);
+                await connection.StartAsync();
+            };
 
-            while (ok)
+            connection.On<string>(HubEndpoint.ReceiveMessage, message => {
+                Console.WriteLine(message);
+            });
+
+            await connection.StartAsync();
+
+            await connection.InvokeAsync(HubEndpoint.SendMessage, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}: Stat Is Connected");
+
+            while (true)
             {
                 var temperature = sensor.ReadTemperature().Celsius;
 
-                var (succeeded, response) = await SendTemperatureReading(httpClient, locationID, temperature);
-
-                Console.WriteLine(response);
-
-                if (!succeeded)
+                try
                 {
-                    ok = false;
-                    break;
+                    await connection.InvokeAsync(HubEndpoint.SendMessage, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}: Temp is {temperature}C");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
                 }
 
                 Thread.Sleep(10000);
             }
-
-            return ok ? 0 : -1;
         }
 
         private static async Task<(bool succeeded, string response)> SendTemperatureReading(
