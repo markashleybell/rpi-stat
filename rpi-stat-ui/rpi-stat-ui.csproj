@@ -3,6 +3,8 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <RootNamespace>rpi_stat_ui</RootNamespace>
+        <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+        <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
     </PropertyGroup>
 
     <ItemGroup>
@@ -14,6 +16,10 @@
 
     <ItemGroup>
         <ProjectReference Include="..\core\core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\js\" />
     </ItemGroup>
 
 </Project>
