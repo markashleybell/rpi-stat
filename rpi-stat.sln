@@ -3,12 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rpi-stat", "rpi-stat.csproj", "{2EB4FAC9-7F1C-492C-ACDB-B3F638DE0973}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rpi-stat", "rpi-stat\rpi-stat.csproj", "{2EB4FAC9-7F1C-492C-ACDB-B3F638DE0973}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7BE6B9DD-0AF8-49B3-B601-401629DB4B53}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitignore = .gitignore
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rpi-stat-ui", "rpi-stat-ui\rpi-stat-ui.csproj", "{35F6F781-436B-4162-A44B-003A8B657869}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "db", "db\db.sqlproj", "{72FF5583-98D4-46BE-8E13-86B78EFFA2AC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +25,16 @@ Global
 		{2EB4FAC9-7F1C-492C-ACDB-B3F638DE0973}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EB4FAC9-7F1C-492C-ACDB-B3F638DE0973}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EB4FAC9-7F1C-492C-ACDB-B3F638DE0973}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35F6F781-436B-4162-A44B-003A8B657869}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35F6F781-436B-4162-A44B-003A8B657869}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35F6F781-436B-4162-A44B-003A8B657869}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35F6F781-436B-4162-A44B-003A8B657869}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72FF5583-98D4-46BE-8E13-86B78EFFA2AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72FF5583-98D4-46BE-8E13-86B78EFFA2AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72FF5583-98D4-46BE-8E13-86B78EFFA2AC}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{72FF5583-98D4-46BE-8E13-86B78EFFA2AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72FF5583-98D4-46BE-8E13-86B78EFFA2AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72FF5583-98D4-46BE-8E13-86B78EFFA2AC}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

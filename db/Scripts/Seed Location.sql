@@ -1,0 +1,1 @@
+﻿INSERT INTO Locations (ID, Name) VALUES ('e9a1b593-e609-4edb-b794-92ace8d4bccf', '26 Ashford Crescent')
