@@ -1,4 +1,5 @@
 using System;
+using System.Device.Gpio;
 using System.Device.I2c;
 using System.Threading;
 
@@ -8,21 +9,34 @@ namespace rpi_stat
     {
         private static void Main(string[] args)
         {
-            var settings = new I2cConnectionSettings(1, MCP9808.MCP9808_I2CADDR_DEFAULT);
-            var i2cDevice = I2cDevice.Create(settings);
+            //var settings = new I2cConnectionSettings(1, MCP9808.MCP9808_I2CADDR_DEFAULT);
+            //var i2cDevice = I2cDevice.Create(settings);
 
-            var sensor = new MCP9808(i2cDevice);
+            //var sensor = new MCP9808(i2cDevice);
 
-            if (sensor.Test())
+            //if (sensor.Test())
+            //{
+            //    Console.WriteLine("Sensor detected");
+            //}
+
+            //while (true)
+            //{
+            //    Console.WriteLine(sensor.ReadTemperature().Celsius);
+
+            //    Thread.Sleep(500);
+            //}
+
+            var gpioController = new GpioController();
+
+            var transmitter = new ENER314(gpioController);
+
+            if (args[0] == "on")
             {
-                Console.WriteLine("Sensor detected");
+                transmitter.On(1);
             }
-
-            while (true)
+            else
             {
-                Console.WriteLine(sensor.ReadTemperature().Celsius);
-
-                Thread.Sleep(500);
+                transmitter.Off(1);
             }
         }
     }
