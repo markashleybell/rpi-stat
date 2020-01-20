@@ -13,34 +13,37 @@ This is the software for my RPi start thermostat project.
 
 ## Device Setup
 
+### OS Install
+
 1. Download [Balena Etcher](https://www.balena.io/etcher/)
 1. Flash [2019-09-26-raspbian-buster-lite](https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2019-09-30/2019-09-26-raspbian-buster-lite.zip) to SD Card
 1. Open `boot` SD partition and copy two files to it:
    - `ssh`: empty file
    - `wpa_supplicant`: see [example](#example-wpa_supplicant) below
 
+### Passwordless SSH Setup
 
-(on win box) set up passwordless SSH login
+#### Windows
 
-ssh-keygen -t rsa 
+Run these commands to generate a public/private key pair, then copy the public key to the RPi.
 
-cat ~/.ssh/id_rsa.pub | ssh pi@192.168.78.11 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
+```
+ssh-keygen -t rsa
 
+cat ~/.ssh/id_rsa.pub | ssh pi@192.168.1.XX 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'`
+```
 
-IF YOU DON'T CALL THE KEY id_rsa IT WON'T BE PICKED UP BY sshd on pi - you'll have to manually add it
+You'll be prompted for the password when you run the copy command.
 
+**IMPORTANT NOTE**: If your key file isn't called `id_rsa`, it won't be automatically picked up by `sshd` on the Pi, so you'll have to manually add it with `ssh-add`.
 
-on pi 
+### Initial RPi Setup
 
-change password
+1. Change the password to stop the OS warning you every time you log in
+1. Run `touch ~/.hushlogin` to stop the Debian login message being displayed every time you log in
+1. Run `sudo apt-get update` then `sudo apt-get dist-upgrade` to get the latest OS updates
 
-sudo apt-get update
-sudo apt-get dist-upgrade
-
-touch ~/.hushlogin
-
-
-.NET Core App
+### .NET Core Build / Publishing
 
 Create project on Windows
 
