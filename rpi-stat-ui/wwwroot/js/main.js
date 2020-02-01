@@ -107,6 +107,9 @@ function getTemperatureSetting() {
     var value = tempSetting.value;
     return parseFloat(value);
 }
+function asString(heatingState) {
+    return heatingState === HeatingState_1.HeatingState.On ? 'On' : 'Off';
+}
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/stathub")
     .withAutomaticReconnect()
@@ -114,17 +117,17 @@ var connection = new signalR.HubConnectionBuilder()
 connection.on(HubEndpoint_1.HubEndpoint.ReceiveMessage, console.log);
 connection.on(HubEndpoint_1.HubEndpoint.ReceiveHeatingStateConfirmation, function (heatingState) {
     currentHeatingState = heatingState;
-    console.log("Heating State Is Now: " + heatingState);
+    console.log("Heating State Confirmation Received: " + asString(heatingState));
 });
 connection.on(HubEndpoint_1.HubEndpoint.ReceiveTemperature, function (temperature) {
     tempElement.innerHTML = temperature.toFixed(2);
     var temperatureSetting = getTemperatureSetting();
     if (temperature < temperatureSetting && currentHeatingState == HeatingState_1.HeatingState.Off) {
-        console.log("Request Heating State: " + HeatingState_1.HeatingState.On);
+        console.log("Requesting Heating State: " + asString(HeatingState_1.HeatingState.On));
         connection.send(HubEndpoint_1.HubEndpoint.RequestHeatingState, HeatingState_1.HeatingState.On);
     }
     else if (temperature >= temperatureSetting && currentHeatingState == HeatingState_1.HeatingState.On) {
-        console.log("Request Heating State: " + HeatingState_1.HeatingState.Off);
+        console.log("Requesting Heating State: " + asString(HeatingState_1.HeatingState.Off));
         connection.send(HubEndpoint_1.HubEndpoint.RequestHeatingState, HeatingState_1.HeatingState.Off);
     }
 });

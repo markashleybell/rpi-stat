@@ -44,7 +44,7 @@ namespace rpi_stat
             connection.On<string>(HubEndpoint.ReceiveMessage, Console.WriteLine);
 
             connection.On<HeatingState>(HubEndpoint.ReceiveHeatingStateRequest, async (state) => {
-                Console.WriteLine($"Heating State Request: {state}");
+                Console.WriteLine($"Heating State Request Received: {state}");
 
                 try
                 {
