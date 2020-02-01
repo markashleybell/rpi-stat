@@ -8,7 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Scripts\types\HeatingState.ts" />
       <None Remove="Scripts\types\HubEndpoint.ts" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <TypeScriptCompile Include="Scripts\types\HeatingState.ts" />
     </ItemGroup>
 
     <ItemGroup>

@@ -25,25 +25,9 @@ namespace rpi_stat
                 Console.WriteLine("Sensor detected");
             }
 
-            //while (true)
-            //{
-            //    Console.WriteLine(sensor.ReadTemperature().Celsius);
+            var gpioController = new GpioController();
 
-            //    Thread.Sleep(500);
-            //}
-
-            //var gpioController = new GpioController();
-
-            //var transmitter = new ENER314(gpioController);
-
-            //if (args[0] == "on")
-            //{
-            //    transmitter.On(1);
-            //}
-            //else
-            //{
-            //    transmitter.Off(1);
-            //}
+            var transmitter = new ENER314(gpioController);
 
             var locationID = new Guid("e9a1b593-e609-4edb-b794-92ace8d4bccf");
 
@@ -57,8 +41,30 @@ namespace rpi_stat
                 await connection.StartAsync();
             };
 
-            connection.On<string>(HubEndpoint.ReceiveMessage, message => {
-                Console.WriteLine(message);
+            connection.On<string>(HubEndpoint.ReceiveMessage, Console.WriteLine);
+
+            connection.On<HeatingState>(HubEndpoint.ReceiveHeatingStateRequest, async (state) => {
+                Console.WriteLine($"Heating State Request: {state}");
+
+                try
+                {
+                    if (state == HeatingState.On)
+                    {
+                        transmitter.On(1);
+                    }
+                    else
+                    {
+                        transmitter.Off(1);
+                    }
+
+                    Console.WriteLine($"Heating State Is Now: {state}");
+
+                    await connection.InvokeAsync(HubEndpoint.ConfirmHeatingState, state);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             });
 
             await connection.StartAsync();
@@ -71,7 +77,7 @@ namespace rpi_stat
 
                 try
                 {
-                    await connection.InvokeAsync(HubEndpoint.SendMessage, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}: Temp is {temperature}C");
+                    // await connection.InvokeAsync(HubEndpoint.SendMessage, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}: Temp is {temperature}C");
                     await connection.InvokeAsync(HubEndpoint.SendTemperature, temperature);
                 }
                 catch (Exception ex)
@@ -79,7 +85,7 @@ namespace rpi_stat
                     Console.WriteLine(ex);
                 }
 
-                Thread.Sleep(10000);
+                Thread.Sleep(5000);
             }
         }
 

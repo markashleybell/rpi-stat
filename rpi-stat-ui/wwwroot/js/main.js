@@ -99,22 +99,59 @@ var Stat =
 Object.defineProperty(exports, "__esModule", { value: true });
 var signalR = __webpack_require__(/*! @microsoft/signalr */ "./node_modules/@microsoft/signalr/dist/esm/index.js");
 var HubEndpoint_1 = __webpack_require__(/*! ./types/HubEndpoint */ "./Scripts/types/HubEndpoint.ts");
+var HeatingState_1 = __webpack_require__(/*! ./types/HeatingState */ "./Scripts/types/HeatingState.ts");
 var tempElement = document.getElementById("temp-display");
+var tempSetting = document.getElementById("temperature");
+var currentHeatingState = HeatingState_1.HeatingState.Off;
+function getTemperatureSetting() {
+    var value = tempSetting.value;
+    return parseFloat(value);
+}
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("/stathub")
     .withAutomaticReconnect()
     .build();
-connection.on(HubEndpoint_1.HubEndpoint.ReceiveMessage, function (message) {
-    console.log(message);
+connection.on(HubEndpoint_1.HubEndpoint.ReceiveMessage, console.log);
+connection.on(HubEndpoint_1.HubEndpoint.ReceiveHeatingStateConfirmation, function (heatingState) {
+    currentHeatingState = heatingState;
+    console.log("Heating State Is Now: " + heatingState);
 });
 connection.on(HubEndpoint_1.HubEndpoint.ReceiveTemperature, function (temperature) {
     tempElement.innerHTML = temperature.toFixed(2);
+    var temperatureSetting = getTemperatureSetting();
+    if (temperature < temperatureSetting && currentHeatingState == HeatingState_1.HeatingState.Off) {
+        console.log("Request Heating State: " + HeatingState_1.HeatingState.On);
+        connection.send(HubEndpoint_1.HubEndpoint.RequestHeatingState, HeatingState_1.HeatingState.On);
+    }
+    else if (temperature >= temperatureSetting && currentHeatingState == HeatingState_1.HeatingState.On) {
+        console.log("Request Heating State: " + HeatingState_1.HeatingState.Off);
+        connection.send(HubEndpoint_1.HubEndpoint.RequestHeatingState, HeatingState_1.HeatingState.Off);
+    }
 });
 connection.start().catch(function (err) { return console.log(err); });
 function send(message) {
     connection.send(HubEndpoint_1.HubEndpoint.SendMessage, message);
 }
 exports.send = send;
+
+
+/***/ }),
+
+/***/ "./Scripts/types/HeatingState.ts":
+/*!***************************************!*\
+  !*** ./Scripts/types/HeatingState.ts ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var HeatingState;
+(function (HeatingState) {
+    HeatingState[HeatingState["On"] = 0] = "On";
+    HeatingState[HeatingState["Off"] = 1] = "Off";
+})(HeatingState = exports.HeatingState || (exports.HeatingState = {}));
 
 
 /***/ }),
@@ -136,6 +173,10 @@ var HubEndpoint = /** @class */ (function () {
     HubEndpoint.ReceiveMessage = "ReceiveMessage";
     HubEndpoint.SendTemperature = "SendTemperature";
     HubEndpoint.ReceiveTemperature = "ReceiveTemperature";
+    HubEndpoint.RequestHeatingState = "RequestHeatingState";
+    HubEndpoint.ReceiveHeatingStateRequest = "ReceiveHeatingStateRequest";
+    HubEndpoint.ConfirmHeatingState = "ConfirmHeatingState";
+    HubEndpoint.ReceiveHeatingStateConfirmation = "ReceiveHeatingStateConfirmation";
     return HubEndpoint;
 }());
 exports.HubEndpoint = HubEndpoint;
