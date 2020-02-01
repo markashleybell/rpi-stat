@@ -3,7 +3,6 @@
     "version": "1.0.0",
     "private": true,
     "description": "TBD",
-    "main": "index.js",
     "scripts": {
         "build": "webpack --mode=development --watch",
         "release": "webpack --mode=production",

@@ -72,6 +72,7 @@ namespace rpi_stat
                 try
                 {
                     await connection.InvokeAsync(HubEndpoint.SendMessage, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}: Temp is {temperature}C");
+                    await connection.InvokeAsync(HubEndpoint.SendTemperature, temperature);
                 }
                 catch (Exception ex)
                 {
