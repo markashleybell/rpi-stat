@@ -18,7 +18,7 @@ function asString(heatingState: HeatingState) {
 }
 
 const connection = new signalR.HubConnectionBuilder()
-    .withUrl("/stathub")
+    .withUrl("https://rpi-stat/stathub")
     .withAutomaticReconnect()
     .build();
 
@@ -26,17 +26,17 @@ connection.on(HubEndpoint.ReceiveMessage, console.log);
 
 connection.on(HubEndpoint.ReceiveHeatingStateConfirmation, (heatingState: HeatingState) => {
     currentHeatingState = heatingState;
-    console.log(`Heating State Confirmation Received: ${asString(heatingState)}`);
+    console.log(`Heating state confirmation received: ${asString(heatingState)}`);
 });
 
 connection.on(HubEndpoint.ReceiveTemperature, (temperature: number) => {
     tempElement.innerHTML = temperature.toFixed(2);
     const temperatureSetting = getTemperatureSetting();
     if (temperature < temperatureSetting && currentHeatingState == HeatingState.Off) {
-        console.log(`Requesting Heating State: ${asString(HeatingState.On)}`);
+        console.log(`Requesting heating state: ${asString(HeatingState.On)}`);
         connection.send(HubEndpoint.RequestHeatingState, HeatingState.On);
     } else if (temperature >= temperatureSetting && currentHeatingState == HeatingState.On) {
-        console.log(`Requesting Heating State: ${asString(HeatingState.Off)}`);
+        console.log(`Requesting heating state: ${asString(HeatingState.Off)}`);
         connection.send(HubEndpoint.RequestHeatingState, HeatingState.Off);
     }
 });

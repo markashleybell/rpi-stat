@@ -36,15 +36,28 @@ namespace rpi_stat
                 .WithAutomaticReconnect()
                 .Build();
 
+            connection.Reconnected += (s) => {
+                Console.WriteLine("Stat is connected");
+
+                return Task.CompletedTask;
+            };
+
+            connection.Reconnecting += (s) => {
+                Console.WriteLine("Trying to reconnect...");
+
+                return Task.CompletedTask;
+            };
+
             connection.Closed += async (error) => {
-                Console.WriteLine(error);
+                Console.WriteLine("Connection closed");
+
                 await connection.StartAsync();
             };
 
             connection.On<string>(HubEndpoint.ReceiveMessage, Console.WriteLine);
 
             connection.On<HeatingState>(HubEndpoint.ReceiveHeatingStateRequest, async (state) => {
-                Console.WriteLine($"Heating State Request Received: {state}");
+                Console.WriteLine($"Heating state request received: {state}");
 
                 try
                 {
@@ -57,19 +70,19 @@ namespace rpi_stat
                         transmitter.Off(1);
                     }
 
-                    Console.WriteLine($"Heating State Is Now: {state}");
+                    Console.WriteLine($"Heating state is now: {state}");
 
                     await connection.InvokeAsync(HubEndpoint.ConfirmHeatingState, state);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex);
                 }
             });
 
             await connection.StartAsync();
 
-            await connection.InvokeAsync(HubEndpoint.SendMessage, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}: Stat Is Connected");
+            await connection.InvokeAsync(HubEndpoint.SendMessage, "Stat is connected");
 
             while (true)
             {
@@ -77,15 +90,17 @@ namespace rpi_stat
 
                 try
                 {
-                    // await connection.InvokeAsync(HubEndpoint.SendMessage, $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}: Temp is {temperature}C");
-                    await connection.InvokeAsync(HubEndpoint.SendTemperature, temperature);
+                    if (connection.State == HubConnectionState.Connected)
+                    {
+                        await connection.InvokeAsync(HubEndpoint.SendTemperature, temperature);
+                    }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex);
                 }
 
-                Thread.Sleep(5000);
+                Thread.Sleep(3000);
             }
         }
 

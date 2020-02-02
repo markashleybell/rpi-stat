@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rpi-stat-ui", "rpi-stat-ui\
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "db", "db\db.sqlproj", "{72FF5583-98D4-46BE-8E13-86B78EFFA2AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "core", "core\core.csproj", "{33EFD630-603D-4FFD-BBF7-85AF99127F0C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "core", "core\core.csproj", "{33EFD630-603D-4FFD-BBF7-85AF99127F0C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rpi-stat-server", "rpi-stat-server\rpi-stat-server.csproj", "{5E6A5D8B-E1A8-4E88-A4EB-3DDB811C2A65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{33EFD630-603D-4FFD-BBF7-85AF99127F0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33EFD630-603D-4FFD-BBF7-85AF99127F0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33EFD630-603D-4FFD-BBF7-85AF99127F0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E6A5D8B-E1A8-4E88-A4EB-3DDB811C2A65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E6A5D8B-E1A8-4E88-A4EB-3DDB811C2A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E6A5D8B-E1A8-4E88-A4EB-3DDB811C2A65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E6A5D8B-E1A8-4E88-A4EB-3DDB811C2A65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
