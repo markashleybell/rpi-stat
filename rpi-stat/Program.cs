@@ -33,7 +33,7 @@ namespace rpi_stat
 
             var connection = new HubConnectionBuilder()
                 .WithUrl("https://rpi-stat/stathub")
-                .WithAutomaticReconnect()
+                .WithAutomaticReconnect(new RetryPolicy())
                 .Build();
 
             connection.Reconnected += (s) => {
@@ -121,6 +121,12 @@ namespace rpi_stat
             var responseContent = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             return (response.IsSuccessStatusCode, responseContent);
+        }
+
+        private class RetryPolicy : IRetryPolicy
+        {
+            public TimeSpan? NextRetryDelay(RetryContext retryContext) =>
+                TimeSpan.FromMilliseconds(2000);
         }
     }
 }

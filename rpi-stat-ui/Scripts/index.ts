@@ -1,6 +1,7 @@
 import * as signalR from "@microsoft/signalr";
 import { HubEndpoint } from "./types/HubEndpoint";
 import { HeatingState } from "./types/HeatingState";
+import { IRetryPolicy } from "@microsoft/signalr";
 
 const tempElement = document.getElementById("temp-display");
 
@@ -17,9 +18,13 @@ function asString(heatingState: HeatingState) {
     return heatingState === HeatingState.On ? 'On' : 'Off';
 }
 
+const retryPolicy: IRetryPolicy = {
+    nextRetryDelayInMilliseconds: () => 2000
+};
+
 const connection = new signalR.HubConnectionBuilder()
     .withUrl("https://rpi-stat/stathub")
-    .withAutomaticReconnect()
+    .withAutomaticReconnect(retryPolicy)
     .build();
 
 connection.on(HubEndpoint.ReceiveMessage, console.log);
@@ -41,7 +46,11 @@ connection.on(HubEndpoint.ReceiveTemperature, (temperature: number) => {
     }
 });
 
-connection.start().catch((err: any) => console.log(err));
+connection.start().then(() => console.log('Connected to server')).catch((err: any) => console.log(err));
+
+connection.onclose(error => console.log('Connection closed'));
+
+connection.onreconnected(connectionId => console.log('Connected to server'));
 
 export function send(message: string) {
     connection.send(HubEndpoint.SendMessage, message);

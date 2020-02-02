@@ -110,9 +110,12 @@ function getTemperatureSetting() {
 function asString(heatingState) {
     return heatingState === HeatingState_1.HeatingState.On ? 'On' : 'Off';
 }
+var retryPolicy = {
+    nextRetryDelayInMilliseconds: function () { return 2000; }
+};
 var connection = new signalR.HubConnectionBuilder()
     .withUrl("https://rpi-stat/stathub")
-    .withAutomaticReconnect()
+    .withAutomaticReconnect(retryPolicy)
     .build();
 connection.on(HubEndpoint_1.HubEndpoint.ReceiveMessage, console.log);
 connection.on(HubEndpoint_1.HubEndpoint.ReceiveHeatingStateConfirmation, function (heatingState) {
@@ -131,7 +134,9 @@ connection.on(HubEndpoint_1.HubEndpoint.ReceiveTemperature, function (temperatur
         connection.send(HubEndpoint_1.HubEndpoint.RequestHeatingState, HeatingState_1.HeatingState.Off);
     }
 });
-connection.start().catch(function (err) { return console.log(err); });
+connection.start().then(function () { return console.log('Connected to server'); }).catch(function (err) { return console.log(err); });
+connection.onclose(function (error) { return console.log('Connection closed'); });
+connection.onreconnected(function (connectionId) { return console.log('Connected to server'); });
 function send(message) {
     connection.send(HubEndpoint_1.HubEndpoint.SendMessage, message);
 }
