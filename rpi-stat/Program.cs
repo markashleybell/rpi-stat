@@ -86,7 +86,7 @@ namespace rpi_stat
 
             while (true)
             {
-                var temperature = sensor.ReadTemperature().Celsius;
+                var temperature = sensor.ReadTemperature().DegreesCelsius;
 
                 try
                 {

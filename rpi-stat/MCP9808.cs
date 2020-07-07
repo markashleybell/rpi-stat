@@ -3,7 +3,7 @@ using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Device.I2c;
 using System.Text;
-using Iot.Units;
+using UnitsNet;
 
 namespace rpi_stat
 {
@@ -113,7 +113,7 @@ namespace rpi_stat
                 temperature = convertToDecimal(upper, lower);
             }
 
-            return Temperature.FromCelsius(temperature);
+            return Temperature.FromDegreesCelsius(temperature);
         }
 
         public void Dispose()
