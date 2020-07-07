@@ -1,6 +1,14 @@
 # Raspberry Pi Smart Thermostat
 
-This is the software for my RPi start thermostat project.
+This is the software for my RPi smart thermostat project.
+
+## Project Summary
+
+- `core`: Common types and constants used across all projects.
+- `db`: Database schema (used for logging temperature data)
+- `rpi-stat`: Executable and hardware drivers which run on the RPi and interface with the temperature sensor and transmitter
+- `rpi-stat-server`: Central Websocket (SignalR) server which all appliances running `rpi-stat` will connect to
+- `rpi-stat-ui`: An HTML user interface for the server
 
 ## Hardware
 
@@ -27,13 +35,13 @@ This is the software for my RPi start thermostat project.
 
 Run these commands to generate a public/private key pair, then copy the public key to the RPi.
 
-```
+```bash
 ssh-keygen -t rsa
 
-cat ~/.ssh/id_rsa.pub | ssh pi@192.168.1.XX 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'`
+cat ~/.ssh/id_rsa.pub | ssh pi@192.168.0.X 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
 ```
 
-You'll be prompted for the password when you run the copy command.
+You'll be prompted for the `pi` user password when you run the copy command.
 
 **IMPORTANT NOTE**: If your key file isn't called `id_rsa`, it won't be automatically picked up by `sshd` on the Pi, so you'll have to manually add it with `ssh-add`.
 
@@ -42,50 +50,56 @@ You'll be prompted for the password when you run the copy command.
 1. Change the password to stop the OS warning you every time you log in
 1. Run `touch ~/.hushlogin` to stop the Debian login message being displayed every time you log in
 1. Run `sudo apt-get update` then `sudo apt-get dist-upgrade` to get the latest OS updates
+1. Run `sudo raspi-config` to enable the I2C interface (required for the `MCP9808` temp sensor
 
 ### .NET Core Build / Publishing
 
-Create project on Windows
+#### Windows
 
+Publish the `rpi-stat` project directly to the Pi:
+
+```bash
 dotnet publish -r linux-arm
 
-scp -r .\bin\Debug\netcoreapp3.1\linux-arm\publish pi@192.168.78.8:/home/pi/rpi-test
+scp -r .\bin\Debug\netcoreapp3.1\linux-arm\publish pi@192.168.0.X:/home/pi/rpi-stat
+```
 
-on pi
+There are scripts in the `rpi-stat` project to publish the whole project (all binaries) and just the executable.
 
-SUB rpi-test for your folder and exe names
+#### Raspberry Pi
 
-cd ~/rpi-test
+We need to give the published executable execute permissions on the Pi.
 
-sudo chmod +x rpi-test
+```bash
+cd ~/rpi-stat
 
-./rpi-test
+sudo chmod +x rpi-stat
 
+./rpi-stat
+```
 
-sudo raspi-config to enable I2C
+### Server SSL Setup
 
+#### Windows
 
-SSL:
+1. Download the binary `mkcert` package [for Windows](https://github.com/FiloSottile/mkcert/releases); it'll be named something like `mkcert-v1.4.1-windows-amd64.exe`
+1. Rename the downloaded file to `mkcert.exe` and (optionally) add the path to your `PATH` environment variable
+1. Create the CA with `mkcert -install`
+1. Create a certificate for your desired server hostname:  `mkcert -pkcs12 rpi-stat`
+1. Import the certificate using the Server Certificates IIS Manager snap-in
+1. Create a site and binding in IIS, using the new certificate for the `https` binding
 
-on Windows: 
+#### Raspberry Pi
 
-Download binary package:
-https://github.com/FiloSottile/mkcert/releases
+Copy the `mkcert` root CA cert to the Pi:  
 
-Rename to mkcert, optionally add to path
-
-Create the CA with mkcert -install
-
-mkcert -pkcs12 rpi-stat (or whatever name)
-
-Create site and binding in IIS
-
-Copy root CA cert to Pi:
+```bash
 scp -r C:\Users\me\AppData\Local\mkcert\rootCA.pem pi@192.168.78.11:/home/pi/ca
+```
 
+Then change to your home directory and install `mkcert` for Linux ARM:
 
-on pi:
-
+```
 cd ~/
 
 sudo apt install libnss3-tools
@@ -93,13 +107,19 @@ sudo apt install libnss3-tools
 wget -O mkcert https://github.com/FiloSottile/mkcert/releases/download/v1.4.1/mkcert-v1.4.1-linux-arm
 
 chmod +x  mkcert
+
 sudo mv mkcert /usr/local/bin
 
 CAROOT=~/ca mkcert -install
 
-Add host to /etc/hosts (sudo nano /etc/hosts, add line for IP)
+sudo nano /etc/hosts
+```
 
-Test: wget https://rpi-stat
+Add a hosts line for IP address of server e.g. 
+
+`192.168.0.X   rpi-stat`
+
+Finally, test with `wget https://rpi-stat`.
 
 
 - https://medium.com/@aweber01/locally-trusted-development-certificates-with-mkcert-and-iis-e09410d92031
