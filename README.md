@@ -138,6 +138,27 @@ network={
 
 ```
 
+## Running (as of now)
+
+### First run
+
+- Publish `rpi-stat-server` with `dotnet publish -c Debug /p:EnvironmentName=Development` (there is a `publish.ps1` script for ongoing dev)
+- Point the IIS site you created earlier (bound to `https://rpi-stat`) at the publish output
+
+### First _and_ subsequent runs
+
+Make sure the Energenie socket is plugged into an outlet.
+
+You should be able to browse to `https://rpi-stat/home/test` and see an `OK` response (this is a SignalR hub, so there is no response from `/`)
+
+- Fire up the PI and SSH in, then run `./rpi-stat/rpi-stat` to start the stat (you'll see some status messages)
+
+  If you see errors at this point, edit the hosts file on the Pi (`sudo nano /etc/hosts`) and make sure the IP address for `rpi-stat` still points to the correct place for `https://rpi-stat`
+- Open a shell in the `rpi-stat-ui` project folder, then `dotnet watch run`
+- Navigate to `https://localhost:5000` to see the control panel
+
+There we go! Setting the temp setting lower than the current temp reading should turn the remote socket off, setting it higher should turn the socket back on.
+
 ## Reference
 
 Reading material for the various parts of the system.
