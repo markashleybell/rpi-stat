@@ -8,19 +8,19 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <None Remove="Scripts\types\HeatingState.ts" />
-      <None Remove="Scripts\types\HubEndpoint.ts" />
+        <None Remove="Scripts\types\HeatingState.ts" />
+        <None Remove="Scripts\types\HubEndpoint.ts" />
     </ItemGroup>
 
     <ItemGroup>
-      <TypeScriptCompile Include="Scripts\types\HeatingState.ts" />
+        <TypeScriptCompile Include="Scripts\types\HeatingState.ts" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Dapper" Version="2.0.35" />
-        <PackageReference Include="Dapper.Contrib" Version="2.0.35" />
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-        <PackageReference Include="System.Data.SqlClient" Version="4.8.1" />
+        <PackageReference Include="Dapper" Version="2.0.90" />
+        <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
     </ItemGroup>
 
     <ItemGroup>
@@ -28,11 +28,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="wwwroot\js\" />
+        <Folder Include="wwwroot\js\" />
     </ItemGroup>
 
     <ItemGroup>
-      <TypeScriptCompile Include="Scripts\types\HubEndpoint.ts" />
+        <TypeScriptCompile Include="Scripts\types\HubEndpoint.ts" />
     </ItemGroup>
 
 </Project>
