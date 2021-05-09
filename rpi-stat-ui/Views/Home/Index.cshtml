@@ -1,0 +1,17 @@
+﻿@model IndexViewModel
+
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <div id="temp-display">Welcome</div>
+
+    <form action="">
+        <input type="number" id="temperature" name="temperature" value="20" step="0.1" min="10" max="30" />
+    </form>
+</div>
+
+@section scripts {
+    <script src="~/js/main.js" asp-append-version="true"></script>
+}

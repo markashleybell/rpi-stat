@@ -89,16 +89,7 @@ namespace rpi_stat
                 PIN_ENCODER_SIGNAL_D1,
                 PIN_ENCODER_SIGNAL_D0
             };
-        }
 
-        public void On(int id) =>
-            Command(id, _on);
-
-        public void Off(int id) =>
-            Command(id, _off);
-
-        private void Command(int id, Dictionary<int, PinValue[]> data)
-        {
             // Pins for encoder K0-K3 data inputs
             _gpioController.OpenPin(PIN_ENCODER_SIGNAL_D0, PinMode.Output);
             _gpioController.OpenPin(PIN_ENCODER_SIGNAL_D1, PinMode.Output);
@@ -110,7 +101,16 @@ namespace rpi_stat
 
             // Pin for modulator enable/disable
             _gpioController.OpenPin(PIN_MODULATOR_ON_OFF, PinMode.Output);
+        }
 
+        public void On(int id) =>
+            Command(id, _on);
+
+        public void Off(int id) =>
+            Command(id, _off);
+
+        private void Command(int id, Dictionary<int, PinValue[]> data)
+        {
             // Disable the modulator
             _gpioController.Write(PIN_MODULATOR_ON_OFF, PinValue.Low);
 
@@ -142,6 +142,13 @@ namespace rpi_stat
 
         public void Dispose()
         {
+            _gpioController.ClosePin(PIN_ENCODER_SIGNAL_D0);
+            _gpioController.ClosePin(PIN_ENCODER_SIGNAL_D1);
+            _gpioController.ClosePin(PIN_ENCODER_SIGNAL_D2);
+            _gpioController.ClosePin(PIN_ENCODER_SIGNAL_D3);
+            _gpioController.ClosePin(PIN_MODE_SELECT);
+            _gpioController.ClosePin(PIN_MODULATOR_ON_OFF);
+
             _gpioController?.Dispose();
             _gpioController = null;
         }
