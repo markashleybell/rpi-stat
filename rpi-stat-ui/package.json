@@ -20,6 +20,6 @@
         "webpack-cli": "^4.7.0"
     },
     "dependencies": {
-        "@microsoft/signalr": "^5.0.5"
+        "@microsoft/signalr": "^7.0.7"
     }
 }
